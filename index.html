@@ -573,22 +573,16 @@ async function loadDeploymentData(){
       return Array.isArray(v) ? v : (Array.isArray(v?.rows) ? v.rows : []);
     });
 
-    // ✅ key change: isolate failures
-    const sa = await saPromise.catch(e => {
-      console.error("SITE_ASSIGN load failed", e);
-      return {};
-    });
-    const pr = await prPromise.catch(e => {
-      console.error("PULLOUT_RULES load failed", e);
-      return [];
-    });
+    const [saRes, prRes] = await Promise.allSettled([saPromise, prPromise]);
 
-    SITE_ASSIGN   = sa || {};
-    PULLOUT_RULES = pr || [];
+    SITE_ASSIGN   = (saRes.status === 'fulfilled' ? (saRes.value || {}) : {});
+    PULLOUT_RULES = (prRes.status === 'fulfilled' ? (prRes.value || []) : []);
+
+    if (saRes.status === 'rejected') console.error("SITE_ASSIGN load failed:", saRes.reason);
+    if (prRes.status === 'rejected') console.error("PULLOUT_RULES load failed:", prRes.reason);
 
   } catch (e) {
     console.error("Deployment data load failed", e);
-    // keep your fallback
     SITE_ASSIGN = {};
     PULLOUT_RULES = [];
   }
