@@ -15,9 +15,7 @@
 		"Cruz, Vjan Michael",
 		"Llegue, Michelle",
 		"Mendoza, Anthony",
-		"Salcedo, Francis",
-		"Etable, Joseph",
-		"Nicolas, Jonalyn"
+		"Salcedo, Francis"
 	],
 	"GDS Nasugbu DC": [
 		"Laserna, Kernell",
@@ -31,30 +29,30 @@
 		"Cuevas, Erick Paul",
 		"Viernes, Joseph"
 	],
-	"GDS Tarlac DC": [
+	"GDS Tuy DC": [
 		"Cutamora, Marc Justin",
 		"Bernabe, Christopher Gian",
-		"Cobsilen, Clifford Jr.",
-		"Dacayanan, Jessa Mae",
 		"Datul, Pel-Jay",
 		"Felipe, Roberto Jr.",
-		"Gerodias, Alrey John",
-		"Kawi, Philip",
-		"Pacada, Roniel",
-		"Lorenzo, Lindley"
+		"Rollo, Mark Gil",
+		"Pacada, Roniel"
 	],
-	"GDS Tayabas DC": [
-		"Curaming, Vincenzo",
-		"Esteves, Carl Emmanuel"
-	],
-	"GDS Tuy DC": [
+	"GDS Tarlac DC": [
 		"Sana, Abegail",
+		"Cobsilen, Clifford Jr.",
+		"Dacayanan, Jessa Mae",
 		"Cruz, Jan Michael Vincent",
 		"Dancel, Angelic",
 		"Casilla, Regine",
 		"Reboroso, Sunrise",
-		"Rollo, Mark Gil",
 		"Tumbaga, Nicole Louisse"
+		"Gerodias, Alrey John",
+		"Kawi, Philip"
+	],
+	
+	"GDS Tayabas DC": [
+		"Curaming, Vincenzo",
+		"Esteves, Carl Emmanuel"
 	],
 	"MDM Alaminos": [
 		"Cinco, Creesialyn Anne",
@@ -62,6 +60,11 @@
 	],
 	"MDM Ormoc": [
 		"Lafuente, RJ"
+	],
+	"MDM Zambales": [
+		"Etable, Joseph",
+		"Nicolas, Jonalyn",
+		"Portillano, Perfecto III"
 	],
 	"Makati Head Office": [
 		"Lariba, Keith Jones Paul"
