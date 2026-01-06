@@ -331,6 +331,35 @@ const COLORS = Object.fromEntries([
 	['HOL', '#ffff00']  // holidays
 ]);
 
+const DEFAULT_WEEKDAY_CODE = "ONS";
+
+function isWeekendDate(d){ const w = d.getDay(); return w === 0 || w === 6; }
+
+function normalizeScheduleWithDefaults(dataObj){
+  const out = { ...(dataObj || {}) };
+
+  if (!CONFIG.START_DATE || !CONFIG.END_DATE) return out;
+
+  const d = new Date(CONFIG.START_DATE);
+  while (d <= CONFIG.END_DATE) {
+    const id = ymd(d);
+
+    if (isHoliday(d)) {
+      out[id] = "HOL";
+    } else if (isWeekendDate(d)) {
+      out[id] = "RD";
+    } else {
+      // weekday default
+      if (!out[id]) out[id] = DEFAULT_WEEKDAY_CODE;
+    }
+
+    d.setDate(d.getDate() + 1);
+  }
+
+  return out;
+}
+
+
 /* ===== Helpers ===== */
 const stripMeta = o => Object.fromEntries(Object.entries(o||{}).filter(([k]) => !k.startsWith("_")));
 const pad = n => String(n).padStart(2,'0');
@@ -861,8 +890,9 @@ function dayCell(dateObj, muted = false) {
   const isSelected= state.selected.has(id);
 
   const status    = state.data[id] || '';
-  // RD/HOL override individual schedule for display
-  const effective = holiday ? 'HOL' : (weekend ? 'RD' : status);
+  // RD/HOL override, otherwise default weekday = ONS
+  const effective = holiday ? 'HOL' : (weekend ? 'RD' : (status || DEFAULT_WEEKDAY_CODE));
+
 
   let bg = '';
   if (effective) bg = COLORS[effective];
@@ -1165,15 +1195,21 @@ async function uploadScheduleViaProxy(){
 	const mergedData = { ...state.data };
 	const d = new Date(CONFIG.START_DATE);
 	while (d <= CONFIG.END_DATE) {
-		const id = ymd(d);
-		const wd = d.getDay();
-		if (isHoliday(d)) {
-		  mergedData[id] = 'HOL';
-		} else if (wd === 0 || wd === 6) {
-		  mergedData[id] = 'RD';
-		}
-		d.setDate(d.getDate() + 1);
-	}
+  	const id = ymd(d);
+  	const wd = d.getDay();
+
+ 	 if (isHoliday(d)) {
+    mergedData[id] = 'HOL';
+ 	 } else if (wd === 0 || wd === 6) {
+    mergedData[id] = 'RD';
+ 	 } else {
+ 	   // weekday default
+ 	   if (!mergedData[id]) mergedData[id] = DEFAULT_WEEKDAY_CODE;
+ 	 }
+
+  d.setDate(d.getDate() + 1);
+}
+
 
 	const payload = {
 		op: "save",
@@ -1220,11 +1256,11 @@ async function fetchScheduleData(name){
 		  body: JSON.stringify({ op: "load", name })
 		});
 		const j = await r.json();
-		if (j?.ok && j.data) return stripMeta(j.data);
+		if (j?.ok && j.data) return normalizeScheduleWithDefaults(stripMeta(j.data));
 	}catch(e){
 		console.warn("Fetch schedule failed for", name, e);
 	}
-	return {};
+	return normalizeScheduleWithDefaults({});
 }
 async function loadScheduleForName(name) {
 	const loadBtn = document.getElementById('loadBtn');
