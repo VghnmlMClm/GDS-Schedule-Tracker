@@ -561,20 +561,39 @@ let PULLOUT_RULES = [];    // [ { Site, CYCLE, WEEK, DAY }, ... ]
 async function loadDeploymentData(){
   try {
     const saPromise = fetch(SITE_ASSIGN_URL).then(r => r.json());
-    const prPromise = fetchJsonViaProxy(PULLOUT_RULES_URL, { preferProxy: true })
-      .then(v => Array.isArray(v) ? v : (Array.isArray(v?.rows) ? v.rows : []))
-      .catch(() => []); // keep your fail-soft behavior
+    const prPromise = fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ op: 'fetch_json', path: 'pullout-deployment.json' })
+    })
+    .then(r => r.json())
+    .then(j => {
+      let v = (j && j.data !== undefined) ? j.data : j;
+      if (typeof v === 'string') { try { v = JSON.parse(v); } catch {} }
+      return Array.isArray(v) ? v : (Array.isArray(v?.rows) ? v.rows : []);
+    });
 
+    // ✅ key change: isolate failures
+    const sa = await saPromise.catch(e => {
+      console.error("SITE_ASSIGN load failed", e);
+      return {};
+    });
+    const pr = await prPromise.catch(e => {
+      console.error("PULLOUT_RULES load failed", e);
+      return [];
+    });
 
-    const [sa, pr] = await Promise.all([saPromise, prPromise]);
     SITE_ASSIGN   = sa || {};
     PULLOUT_RULES = pr || [];
+
   } catch (e) {
     console.error("Deployment data load failed", e);
+    // keep your fallback
     SITE_ASSIGN = {};
     PULLOUT_RULES = [];
   }
 }
+
 
 
 
