@@ -2,7 +2,7 @@
   { "Site": "GDS Antipolo HQ",  "CYCLE": 2, "WEEK": 1, "DAY": 0 },
   { "Site": "GDS Antipolo Basemap", "CYCLE": 2, "WEEK": 1, "DAY": 0 },
   { "Site": "Makati Head Office", "CYCLE": 1, "WEEK": 1, "DAY": 2, "TYPE": 1 },
-  { "Site": "MDM Alaminos", "CYCLE": 2, "WEEK": 1, "DAY": 2 },
+  { "Site": "MDM Alaminos", "CYCLE": 2, "WEEK": 1, "DAY": 2, "TYPE": 2 },
   { "Site": "GDS Tarlac DC", "CYCLE": 2, "WEEK": 1, "DAY": 2 },
   { "Site": "GDS San Miguel DC", "CYCLE": 2, "WEEK": 1, "DAY": 1 },
   { "Site": "GDS Tuy DC", "CYCLE": 2, "WEEK": 1, "DAY": 1 },
