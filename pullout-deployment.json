@@ -10,5 +10,5 @@
   { "Site": "GDS Tayabas DC", "CYCLE": 2, "WEEK": 1, "DAY": 2, "TYPE": 2 },
   { "Site": "GDS Pili DC", "CYCLE": 3, "WEEK": 1, "DAY": 0, "TYPE": 2},
   { "Site": "MDM Zambales", "CYCLE": 2, "WEEK": 1, "DAY": 2, "TYPE": 2 },
-  { "Site": "MDM Ormoc", "CYCLE": 2, "WEEK": 1, "DAY": 1, "TYPE": 2 }
+  { "Site": "MDM Ormoc", "CYCLE": 2, "WEEK": 1, "DAY": 0, "TYPE": 2 }
 ]
