@@ -1,13 +1,15 @@
 {
-	"GDS Antipolo HQ": [
+	"GDS HQ MAKATI 1": [
 		"Daluping, Aizely",
-		"Barcena, Blincent Addam",
 		"Bongalbal, Ronnel",
+		"Encarnado, Gerik Ivan",
+		"Wenceslao, Roesel"
+	],
+	"GDS HQ MAKATI 2": [
+		"Barcena, Blincent Addam",
 		"Calma, Voughn Emil",
 		"De Jesus, Edgar Chevy",
-		"Encarnado, Gerik Ivan",
-		"See, Eliza Kathleen",
-		"Wenceslao, Roesel"
+		"See, Eliza Kathleen"
 	],
 	"GDS Antipolo Basemap": [
 		"Zapanta, Andrew",

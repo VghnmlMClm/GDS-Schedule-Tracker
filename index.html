@@ -204,7 +204,7 @@
 
 			<!-- INCOMPLETE SCHEDULES (moved here) -->
 			<hr class="my-4 border-slate-700">
-			<h3 class="text-sm font-semibold mb-2 text-slate-200">INCOMPLETE SCHEDULES (Per Immediate Supervisor Team)</h3>
+			<h3 class="text-sm font-semibold mb-2 text-slate-200">OUTDATED SCHEDULES</h3>
 			<div id="missingSubtitle" class="text-[11px] text-slate-500 mb-2">
 				People with incomplete schedules in config range.
 			</div>
@@ -1747,7 +1747,7 @@ async function buildDashboard(){
 	const nameToData = new Map(pairs.map(([n,d])=>[n,d||{}]));
 	const incomplete = allowedNames.filter(n=>!hasCompleteScheduleForRangeStrict(nameToData.get(n))).sort((a,b)=>a.localeCompare(b));
 	if(!incomplete.length){
-		$missingList.innerHTML=`<div class="text-slate-400 text-sm">Everyone under the selected supervisor has a complete schedule for the range.</div>`;
+		$missingList.innerHTML=`<div class="text-slate-400 text-sm">Everyone under the selected supervisor has updated schedule for the range.</div>`;
 	}else{
 		const posMap = new Map(RESPONDERS.map(r => [r.NAME, r.POSITION || 'Unspecified']));
 		$missingList.innerHTML=incomplete.map(n=>{
