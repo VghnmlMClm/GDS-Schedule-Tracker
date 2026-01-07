@@ -1265,6 +1265,32 @@ async function fetchScheduleData(name){
 	}
 	return normalizeScheduleWithDefaults({});
 }
+async function fetchScheduleEnvelope(name){
+  // returns: { data: <normalized schedule>, meta: <_meta or {}> }
+  try{
+    const r = await fetch(PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type":"application/json", "Accept":"application/json" },
+      body: JSON.stringify({ op: "load", name })
+    });
+    const j = await r.json();
+
+    if (j?.ok && j.data) {
+      const meta = (j.data && typeof j.data === 'object' && j.data._meta && typeof j.data._meta === 'object')
+        ? j.data._meta
+        : {};
+
+      // keep your existing behavior: remove _meta and normalize defaults
+      const data = normalizeScheduleWithDefaults(stripMeta(j.data));
+      return { data, meta };
+    }
+  } catch(e){
+    console.warn("Fetch schedule envelope failed for", name, e);
+  }
+
+  return { data: normalizeScheduleWithDefaults({}), meta: {} };
+}
+
 async function loadScheduleForName(name) {
 	const loadBtn = document.getElementById('loadBtn');
 	const hasName = !!(name && name.trim());
@@ -1618,6 +1644,35 @@ async function autoApplySupervisorFromName(){
 	if (idx >= 0) $fSupervisors.selectedIndex = idx;
 }
 
+
+
+const OUTDATED_DAYS = 28;
+
+function fmtLastSaved(iso){
+  if(!iso) return "Never saved";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "Invalid date";
+  return d.toLocaleString(undefined, { month:'short', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+function getOutdatedThreshold(){
+  // "28 days from DEADLINE DATE" => threshold = DEADLINE - 28 days
+  if (!CONFIG.DEADLINE_AT) return null;
+  const t = new Date(CONFIG.DEADLINE_AT);
+  t.setDate(t.getDate() - OUTDATED_DAYS);
+  return t;
+}
+
+function isOutdatedByMeta(meta){
+  const threshold = getOutdatedThreshold();
+  if (!threshold) return false;                 // if no deadline configured, don't flag anyone
+  const ls = meta?.lastSaved;
+  if (!ls) return true;                         // never saved => outdated
+  const d = new Date(ls);
+  if (isNaN(d.getTime())) return true;           // unparseable => outdated
+  return d < threshold;                          // older than (deadline - 28 days)
+}
+
 /* Build dashboard */
 async function buildDashboard(){
 	const $warning = document.getElementById('warningList');
@@ -1649,13 +1704,16 @@ async function buildDashboard(){
 
 	const dates = dateRangeList();
 	const dateSet = new Set(dates);
-	const pairs = await Promise.all(allowedNames.map(async n => [n, await fetchScheduleData(n)]));
+	const pairs = await Promise.all(allowedNames.map(async n => [n, await fetchScheduleEnvelope(n)]));
+
 
 	// Aggregate by date
 	const dateToPeople = new Map();
 	let totalRecords = 0;
-	for (const [name, sched] of pairs) {
-		for (const [d, code] of Object.entries(sched || {})) {
+	for (const [name, env] of pairs) {
+  	const sched = env?.data || {};
+  	for (const [d, code] of Object.entries(sched)) {
+
 		  if (!dateSet.has(d)) continue;
 		  if (!selectedTypes.includes(code)) continue;
 		  if (!dateToPeople.has(d)) dateToPeople.set(d, []);
@@ -1686,7 +1744,7 @@ async function buildDashboard(){
 		return [...out];
 	  })([val]).filter(n => n !== val);
 
-	  const schedByName = new Map(pairs.map(([n, d]) => [n, d || {}]));
+	  const schedByName = new Map(pairs.map(([n, env]) => [n, env?.data || {}]));
 
 	  const warningDates = [];
 	  for (const d of dates) {
@@ -1743,23 +1801,47 @@ async function buildDashboard(){
 	  ? html
 	  : '<tbody><tr><td colspan="3" class="text-slate-400">No data for selected filters/types.</td></tr></tbody>';
 
-	// Incomplete list
-	const nameToData = new Map(pairs.map(([n,d])=>[n,d||{}]));
-	const incomplete = allowedNames.filter(n=>!hasCompleteScheduleForRangeStrict(nameToData.get(n))).sort((a,b)=>a.localeCompare(b));
-	if(!incomplete.length){
-		$missingList.innerHTML=`<div class="text-slate-400 text-sm">Everyone under the selected supervisor has updated schedule for the range.</div>`;
-	}else{
-		const posMap = new Map(RESPONDERS.map(r => [r.NAME, r.POSITION || 'Unspecified']));
-		$missingList.innerHTML=incomplete.map(n=>{
-		  const pos=posMap.get(n)||'Unspecified';
-		  return `<div class="flex items-start gap-2">
-				<span class="w-2 h-2 mt-2 rounded-full bg-yellow-500/80"></span>
-				<div><div class="font-medium">${n}</div><div class="text-xs text-slate-400">${pos}</div></div>
-		  </div>`;
-		}).join('');
+	// OUTDATED list (meta.lastSaved vs (deadline - 28 days))
+	const nameToEnv = new Map(pairs.map(([n, env]) => [n, env || {data:{}, meta:{}}]));
+	
+	const outdated = allowedNames
+  	.filter(n => isOutdatedByMeta(nameToEnv.get(n)?.meta))
+  	.sort((a,b)=>a.localeCompare(b));
+	
+	const threshold = getOutdatedThreshold();
+	const thresholdLabel = threshold
+  	? threshold.toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' })
+  	: null;
+	
+	if (!CONFIG.DEADLINE_AT) {
+  	$missingList.innerHTML = `<div class="text-slate-400 text-sm">
+	    Deadline not configured in config.json — cannot compute outdated schedules.
+  	</div>`;
+	} else if (!outdated.length) {
+  	$missingList.innerHTML = `<div class="text-slate-400 text-sm">
+	    No outdated schedules detected (LastSaved is within ${OUTDATED_DAYS} days before deadline).
+  	</div>`;
+	} else {
+  	const posMap = new Map(RESPONDERS.map(r => [r.NAME, r.POSITION || 'Unspecified']));
+  	$missingList.innerHTML = outdated.map(n=>{
+    	const pos = posMap.get(n) || 'Unspecified';
+    	const ls  = nameToEnv.get(n)?.meta?.lastSaved || '';
+    	const lsLabel = fmtLastSaved(ls);
+    	return `<div class="flex items-start gap-2">
+      	<span class="w-2 h-2 mt-2 rounded-full bg-yellow-500/80"></span>
+      	<div>
+        	<div class="font-medium">${n}</div>
+        	<div class="text-xs text-slate-400">${pos}</div>
+	        <div class="text-[11px] text-slate-500">LastSaved: ${lsLabel}</div>
+      	</div>
+	    </div>`;
+  	}).join('');
 	}
+
 	$missingSubtitle.textContent =
-		`Under: ${val==='__ALL__'?'All supervisors':val} • Completeness: HOL on holidays, RD on weekends, any set on weekdays`;
+  	CONFIG.DEADLINE_AT
+    	? `Under: ${val==='__ALL__'?'All supervisors':val} • Outdated if LastSaved is earlier than ${thresholdLabel} (Deadline - ${OUTDATED_DAYS} days)`
+	    : `Under: ${val==='__ALL__'?'All supervisors':val} • Deadline not set`;
 
 	$hint.textContent = rows.length ? 'Showing selected schedule types per day.' : 'Adjust supervisor or schedule mode.';
 }
