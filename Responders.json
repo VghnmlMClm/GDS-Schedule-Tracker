@@ -74,13 +74,6 @@
 		"DIVISION": "MDM",
 		"DEPARTMENT": "GDS",
 		"TEAM": "GDM",
-		"NAME": "Curaming, Vincenzo"
-	},
-	{
-		"POSITION": "JUNIOR GIS SPECIALIST",
-		"DIVISION": "MDM",
-		"DEPARTMENT": "GDS",
-		"TEAM": "GDM",
 		"NAME": "De Guzman, Kyle Ashley Rae"
 	},
 	{
@@ -193,13 +186,6 @@
 		"DIVISION": "MDM",
 		"DEPARTMENT": "GDS",
 		"TEAM": "LTS",
-		"NAME": "Cruz, Jan Michael Vincent"
-	},
-	{
-		"POSITION": "SENIOR LAND TECHNICAL SPECIALIST",
-		"DIVISION": "MDM",
-		"DEPARTMENT": "GDS",
-		"TEAM": "LTS",
 		"NAME": "Dancel, Angelic"
 	},
 	{
@@ -224,14 +210,14 @@
 		"NAME": "Reboroso, Sunrise"
 	},
 	{
-		"POSITION": "JUNIOR LAND TECHNICAL SPECIALIST",
+		"POSITION": "SENIOR LAND TECHNICAL SPECIALIST",
 		"DIVISION": "MDM",
 		"DEPARTMENT": "GDS",
 		"TEAM": "LTS",
 		"NAME": "Rollo, Mark Gil"
 	},
 	{
-		"POSITION": "JUNIOR LAND TECHNICAL SPECIALIST",
+		"POSITION": "SENIOR LAND TECHNICAL SPECIALIST",
 		"DIVISION": "MDM",
 		"DEPARTMENT": "GDS",
 		"TEAM": "LTS",

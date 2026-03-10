@@ -54,7 +54,6 @@
 		"NAME": "See, Eliza Kathleen",
 		"POSITION": "SENIOR GIS SPECIALIST",
 		"TEAM": [
-			{ "NAME": "Curaming, Vincenzo", "POSITION": "JUNIOR GIS SPECIALIST" },
 			{ "NAME": "Esteves, Carl Emmanuel", "POSITION": "JUNIOR GIS SPECIALIST" },
 			{ "NAME": "Viernes, Joseph", "POSITION": "JUNIOR GIS SPECIALIST" }
 		]
@@ -83,12 +82,11 @@
 		"NAME": "Sana, Abegail",
 		"POSITION": "LEAD SENIOR LAND TECHNICAL SPECIALIST",
 		"TEAM": [
-			{ "NAME": "Cruz, Jan Michael Vincent", "POSITION": "SENIOR LAND TECHNICAL SPECIALIST" },
 			{ "NAME": "Dancel, Angelic", "POSITION": "SENIOR LAND TECHNICAL SPECIALIST" },
 			{ "NAME": "Casilla, Regine", "POSITION": "JUNIOR LAND TECHNICAL SPECIALIST" },
 			{ "NAME": "Reboroso, Sunrise", "POSITION": "JUNIOR LAND TECHNICAL SPECIALIST" },
-			{ "NAME": "Rollo, Mark Gil", "POSITION": "JUNIOR LAND TECHNICAL SPECIALIST" },
-			{ "NAME": "Tumbaga, Nicole Louisse", "POSITION": "JUNIOR LAND TECHNICAL SPECIALIST" }
+			{ "NAME": "Rollo, Mark Gil", "POSITION": "SENIOR LAND TECHNICAL SPECIALIST" },
+			{ "NAME": "Tumbaga, Nicole Louisse", "POSITION": "SENIOR LAND TECHNICAL SPECIALIST" }
 		]
 	},
 	{
