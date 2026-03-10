@@ -701,6 +701,20 @@ async function computeDeploymentMarkersForSelected() {
   const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
   const clampInWindow = (d) => d >= windowStart && d <= windowEnd;
 
+  // ---------- holiday-aware anchor helpers (TYPE 1 only) ----------
+  const prevWorkingDay = (d) => {
+    const x = new Date(d);
+    x.setDate(x.getDate() - 1);
+    while (!isWD(x)) x.setDate(x.getDate() - 1);
+    return x;
+  };
+  const nextWorkingDay = (d) => {
+    const x = new Date(d);
+    x.setDate(x.getDate() + 1);
+    while (!isWD(x)) x.setDate(x.getDate() + 1);
+    return x;
+  };
+
   const nthWorkingFrom = (start, n) => {
     let d = new Date(start), c = 0;
     for (;;) {
@@ -772,7 +786,7 @@ async function computeDeploymentMarkersForSelected() {
         pull:   (start) => thirdFridayOfSpan(start, 21)
       };
     }
-    // CYCLE 4 (if you added it earlier): 12 weeks active + 1 week inactive
+    // CYCLE 4: 12 weeks active + 1 week inactive
     return {
       activeDays: 84, periodDays: 91,
       deploy: (start) => (DAY === 2 ? nthWorkingFrom(start, 2) : nthWorkingFrom(start, 1)),
@@ -786,13 +800,11 @@ async function computeDeploymentMarkersForSelected() {
 
   // ---------- build blocks in order ----------
   const blocks = []; // { start, deploy, pull }
-  // Rewind by full period so we align to block boundaries (important for CYCLE 3)
   let cursor = new Date(baseline);
   while (addDays(cursor, -cfg.periodDays) > evalStart) {
     cursor = addDays(cursor, -cfg.periodDays);
   }
 
-  // Walk forward across horizon with a guard
   let guard = 0;
   while (cursor <= addDays(evalEnd, cfg.periodDays * 2) && guard < 2000) {
     guard++;
@@ -819,8 +831,21 @@ async function computeDeploymentMarkersForSelected() {
     for (let i = 0; i < blocks.length - 1; i++) {
       const cur = blocks[i], next = blocks[i + 1];
       if (!cur.pull || !next.deploy) continue;
-      const bandStart = addDays(cur.pull, 1);
-      const bandEnd   = addDays(next.deploy, -1);
+
+      let bandStart, bandEnd;
+
+      if (TYPE === 1) {
+        // TYPE 1: shift anchors to nearest working day if they land on a holiday
+        const effectivePull   = isWD(cur.pull)    ? cur.pull    : prevWorkingDay(cur.pull);
+        const effectiveDeploy = isWD(next.deploy)  ? next.deploy : nextWorkingDay(next.deploy);
+        bandStart = addDays(effectivePull,   1);
+        bandEnd   = addDays(effectiveDeploy, -1);
+      } else {
+        // TYPE 2: original rule, no holiday shifting
+        bandStart = addDays(cur.pull,    1);
+        bandEnd   = addDays(next.deploy, -1);
+      }
+
       if (bandStart > bandEnd) continue;
 
       const d = new Date(bandStart);
