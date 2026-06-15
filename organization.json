@@ -18,17 +18,19 @@
 		"NAME": "Bongalbal, Ronnel",
 		"POSITION": "DEPUTY MANAGER",
 		"TEAM": [
-			{ "NAME": "Lafuente, RJ", "POSITION": "JUNIOR GIS SPECIALIST" },
-			{ "NAME": "Postrado, Jay", "POSITION": "JUNIOR GIS SPECIALIST" }
+			{ "NAME": "Cinco, Creesialyn Anne", "POSITION": "JUNIOR GIS SPECIALIST" },
+			{ "NAME": "De Guzman, Kyle Ashley Rae", "POSITION": "JUNIOR GIS SPECIALIST" }
+
 		]
 	},
 	{
 		"NAME": "Calma, Voughn Emil",
 		"POSITION": "SENIOR GIS SPECIALIST",
 		"TEAM": [
-			{ "NAME": "Cinco, Creesialyn Anne", "POSITION": "JUNIOR GIS SPECIALIST" },
-			{ "NAME": "De Guzman, Kyle Ashley Rae", "POSITION": "JUNIOR GIS SPECIALIST" },
-			{ "NAME": "Lariba, Keith Jones Paul", "POSITION": "JUNIOR GIS SPECIALIST" }
+			{ "NAME": "Cuevas, Erick Paul", "POSITION": "JUNIOR GIS SPECIALIST" },
+			{ "NAME": "Etable, Joseph", "POSITION": "JUNIOR GIS SPECIALIST" }
+			
+			
 		]
 	},
 	{
@@ -37,25 +39,23 @@
 		"TEAM": [
 			{ "NAME": "Cobsilen, Clifford Jr.", "POSITION": "JUNIOR GIS SPECIALIST" },
 			{ "NAME": "Gerodias, Alrey John", "POSITION": "JUNIOR GIS SPECIALIST" },
-			{ "NAME": "Kawi, Philip", "POSITION": "JUNIOR GIS SPECIALIST" }
+			{ "NAME": "Viernes, Joseph", "POSITION": "JUNIOR GIS SPECIALIST" }
 		]
 	},
 	{
 		"NAME": "Encarnado, Gerik Ivan",
 		"POSITION": "SENIOR GIS SPECIALIST",
 		"TEAM": [
-			{ "NAME": "Cuevas, Erick Paul", "POSITION": "JUNIOR GIS SPECIALIST" },
-			{ "NAME": "Etable, Joseph", "POSITION": "JUNIOR GIS SPECIALIST" },
-			{ "NAME": "Nicolas, Jonalyn", "POSITION": "JUNIOR GIS SPECIALIST" },
-			{ "NAME": "Portillano, Perfecto III", "POSITION": "JUNIOR GIS SPECIALIST" }
 		]
 	},
 	{
 		"NAME": "See, Eliza Kathleen",
 		"POSITION": "SENIOR GIS SPECIALIST",
 		"TEAM": [
-			{ "NAME": "Esteves, Carl Emmanuel", "POSITION": "JUNIOR GIS SPECIALIST" },
-			{ "NAME": "Viernes, Joseph", "POSITION": "JUNIOR GIS SPECIALIST" }
+			{ "NAME": "Lafuente, RJ", "POSITION": "JUNIOR GIS SPECIALIST" },
+			{ "NAME": "Postrado, Jay", "POSITION": "JUNIOR GIS SPECIALIST" },
+			{ "NAME": "Lariba, Keith Jones Paul", "POSITION": "JUNIOR GIS SPECIALIST" },
+			{ "NAME": "Kawi, Philip", "POSITION": "JUNIOR GIS SPECIALIST" }
 		]
 	},
 	{
@@ -85,7 +85,7 @@
 			{ "NAME": "Dancel, Angelic", "POSITION": "SENIOR LAND TECHNICAL SPECIALIST" },
 			{ "NAME": "Casilla, Regine", "POSITION": "JUNIOR LAND TECHNICAL SPECIALIST" },
 			{ "NAME": "Reboroso, Sunrise", "POSITION": "JUNIOR LAND TECHNICAL SPECIALIST" },
-			{ "NAME": "Rollo, Mark Gil", "POSITION": "SENIOR LAND TECHNICAL SPECIALIST" },
+			{ "NAME": "Dacayanan, Jessa Mae", "POSITION": "JUNIOR LAND TECHNICAL SPECIALIST" },
 			{ "NAME": "Tumbaga, Nicole Louisse", "POSITION": "SENIOR LAND TECHNICAL SPECIALIST" }
 		]
 	},
@@ -93,10 +93,10 @@
 		"NAME": "Cutamora, Marc Justin",
 		"POSITION": "LEAD SENIOR LAND TECHNICAL SPECIALIST",
 		"TEAM": [
-			{ "NAME": "Bernabe, Christopher Gian", "POSITION": "SENIOR LAND TECHNICAL SPECIALIST" },
-			{ "NAME": "Dacayanan, Jessa Mae", "POSITION": "JUNIOR LAND TECHNICAL SPECIALIST" },
 			{ "NAME": "Datul, Pel-Jay", "POSITION": "JUNIOR LAND TECHNICAL SPECIALIST" },
 			{ "NAME": "Felipe, Roberto Jr.", "POSITION": "JUNIOR LAND TECHNICAL SPECIALIST" },
+			{ "NAME": "Rollo, Mark Gil", "POSITION": "SENIOR LAND TECHNICAL SPECIALIST" },
+			{ "NAME": "Galinato, Leonard Gelo", "POSITION": "JUNIOR LAND TECHNICAL SPECIALIST" },
 			{ "NAME": "Pacada, Roniel", "POSITION": "JUNIOR LAND TECHNICAL SPECIALIST" }
 		]
 	}

@@ -81,13 +81,6 @@
 		"DIVISION": "MDM",
 		"DEPARTMENT": "GDS",
 		"TEAM": "GDM",
-		"NAME": "Esteves, Carl Emmanuel"
-	},
-	{
-		"POSITION": "JUNIOR GIS SPECIALIST",
-		"DIVISION": "MDM",
-		"DEPARTMENT": "GDS",
-		"TEAM": "GDM",
 		"NAME": "Etable, Joseph"
 	},
 	{
@@ -137,21 +130,7 @@
 		"DIVISION": "MDM",
 		"DEPARTMENT": "GDS",
 		"TEAM": "GDM",
-		"NAME": "Nicolas, Jonalyn"
-	},
-	{
-		"POSITION": "JUNIOR GIS SPECIALIST",
-		"DIVISION": "MDM",
-		"DEPARTMENT": "GDS",
-		"TEAM": "GDM",
 		"NAME": "Ordoño, Abigail Jafet"
-	},
-	{
-		"POSITION": "JUNIOR GIS SPECIALIST",
-		"DIVISION": "MDM",
-		"DEPARTMENT": "GDS",
-		"TEAM": "GDM",
-		"NAME": "Portillano, Perfecto III"
 	},
 	{
 		"POSITION": "JUNIOR GIS SPECIALIST",
@@ -187,13 +166,6 @@
 		"DEPARTMENT": "GDS",
 		"TEAM": "LTS",
 		"NAME": "Dancel, Angelic"
-	},
-	{
-		"POSITION": "SENIOR LAND TECHNICAL SPECIALIST",
-		"DIVISION": "MDM",
-		"DEPARTMENT": "GDS",
-		"TEAM": "LTS",
-		"NAME": "Bernabe, Christopher Gian"
 	},
 	{
 		"POSITION": "JUNIOR LAND TECHNICAL SPECIALIST",
@@ -243,6 +215,13 @@
 		"DEPARTMENT": "GDS",
 		"TEAM": "LTS",
 		"NAME": "Felipe, Roberto Jr."
+	},
+		{
+		"POSITION": "JUNIOR LAND TECHNICAL SPECIALIST",
+		"DIVISION": "MDM",
+		"DEPARTMENT": "GDS",
+		"TEAM": "LTS",
+		"NAME": "Galinato, Leonard Gelo"
 	},
 	{
 		"POSITION": "JUNIOR LAND TECHNICAL SPECIALIST",

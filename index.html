@@ -295,12 +295,18 @@
 
 <script>
 /* ===== URLs (single source of truth) ===== */
-const PROXY_URL          = "https://frosty-water-9f6a.voughn-calma-086.workers.dev/";
-const RESPONDERS_URL     = "Responders.json";
-const CONFIG_URL         = "config.json";
-const ORG_URL            = "organization.json";
-const SITE_ASSIGN_URL = "site%20assignment.json";
-const PULLOUT_RULES_URL  = "pullout-deployment.json";
+const PROXY_URL = "https://worker-gds-sched.voughn-calma-086.workers.dev/";
+
+async function workerPost(op, extra = {}) {
+  const r = await fetch(PROXY_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({ op, ...extra }),
+  });
+  const j = await r.json();
+  if (!j?.ok) throw new Error(j?.error || `op=${op} failed (HTTP ${r.status})`);
+  return j.data;
+}
 
 /* ===== Schedules (no duplicate consts) ===== */
 const SCHEDULE_OPTIONS = [
@@ -444,12 +450,10 @@ const dateInRange = d => {
 const isHoliday = d => CONFIG.HOLIDAYS_SET.has(ymd(d));
 async function loadConfig(){
 	try{
-		const r = await fetch(CONFIG_URL);
-		const j = await r.json();
-		CONFIG.START_DATE   = parseDateStr(j.START_DATE);
-		CONFIG.END_DATE     = parseDateStr(j.END_DATE);
-		CONFIG.HOLIDAYS_SET = new Set(Array.isArray(j.HOLIDAYS) ? j.HOLIDAYS : []);
-
+		const j = await workerPost('get_config');
+		CONFIG.START_DATE        = parseDateStr(j.START_DATE);
+		CONFIG.END_DATE          = parseDateStr(j.END_DATE);
+		CONFIG.HOLIDAYS_SET      = new Set(Array.isArray(j.HOLIDAYS) ? j.HOLIDAYS : []);
 		CONFIG.DEADLINE_DATE_STR = j["DEADLINE DATE"] || null;
 		CONFIG.DEADLINE_TIME_STR = j["DEADLINE TIME"] || null;
 		CONFIG.DEADLINE_AT       = (CONFIG.DEADLINE_DATE_STR && CONFIG.DEADLINE_TIME_STR)
@@ -528,8 +532,7 @@ let ORG_INDEX = new Map();
 let ORG_SUPERVISORS = [];
 async function loadOrganization(){
 	try{
-		const r = await fetch(ORG_URL);
-		const data = await r.json();
+		const data = await workerPost('get_org');
 
 		ORG_INDEX.clear();
 		ORG_SUPERVISORS = [];
@@ -560,27 +563,16 @@ let PULLOUT_RULES = [];    // [ { Site, CYCLE, WEEK, DAY }, ... ]
 
 async function loadDeploymentData(){
   try {
-    const saPromise = fetch(SITE_ASSIGN_URL).then(r => r.json());
-    const prPromise = fetch(PROXY_URL, {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json' },
-      body: JSON.stringify({ op: 'fetch_json', path: 'pullout-deployment.json' })
-    })
-    .then(r => r.json())
-    .then(j => {
-      let v = (j && j.data !== undefined) ? j.data : j;
-      if (typeof v === 'string') { try { v = JSON.parse(v); } catch {} }
-      return Array.isArray(v) ? v : (Array.isArray(v?.rows) ? v.rows : []);
-    });
+    const [saRes, prRes] = await Promise.allSettled([
+      workerPost('get_site_assign'),
+      workerPost('get_pullout_rules'),
+    ]);
 
-    const [saRes, prRes] = await Promise.allSettled([saPromise, prPromise]);
-
-    SITE_ASSIGN   = (saRes.status === 'fulfilled' ? (saRes.value || {}) : {});
-    PULLOUT_RULES = (prRes.status === 'fulfilled' ? (prRes.value || []) : []);
+    SITE_ASSIGN   = saRes.status === 'fulfilled' ? (saRes.value || {}) : {};
+    PULLOUT_RULES = prRes.status === 'fulfilled' ? (prRes.value || []) : [];
 
     if (saRes.status === 'rejected') console.error("SITE_ASSIGN load failed:", saRes.reason);
     if (prRes.status === 'rejected') console.error("PULLOUT_RULES load failed:", prRes.reason);
-
   } catch (e) {
     console.error("Deployment data load failed", e);
     SITE_ASSIGN = {};
@@ -861,10 +853,8 @@ async function computeDeploymentMarkersForSelected() {
 let RESPONDERS = [];
 async function loadResponders(){
 	try{
-		const res = await fetch(RESPONDERS_URL);
-		const raw = await res.json();
-		const rows = Array.isArray(raw) ? raw : (Array.isArray(raw?.rows) ? raw.rows : []);
-		RESPONDERS = rows.map(r => ({
+		const rows = await workerPost('get_responders');
+		RESPONDERS = (Array.isArray(rows) ? rows : []).map(r => ({
 		  POSITION:   normVal(r.POSITION   ?? r.position),
 		  TEAM:       normVal(r.TEAM       ?? r.team),
 		  NAME:       normVal(r.NAME       ?? r.name)

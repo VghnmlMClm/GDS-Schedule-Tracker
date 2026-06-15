@@ -1,0 +1,8 @@
+name = "worker-gds-sched"
+main = "index.js"
+compatibility_date = "2024-09-23"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "gds-schedule-tracker"
+database_id = "25d9d5fc-4edf-474a-b8d7-ae3d334288b6"

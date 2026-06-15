@@ -6,12 +6,12 @@
 		"Wenceslao, Roesel",
 		"Cruz, Vjan Michael",
 		"Llegue, Michelle",
+		"De Jesus, Edgar Chevy",
 		"Salcedo, Francis"
 	],
 	"GDS HQ MAKATI 2": [
 		"Barcena, Blincent Addam",
 		"Calma, Voughn Emil",
-		"De Jesus, Edgar Chevy",
 		"See, Eliza Kathleen",
 		"Zapanta, Andrew",
 		"Concepcion, Jamaica",
@@ -22,14 +22,11 @@
 		"Mendoza, Carlo",
 		"Ordoño, Abigail Jafet"
 	],
-	"GDS Pili DC": [
-	],
-	"GDS San Miguel DC": [
-		"Cuevas, Erick Paul"
-	],
+	"GDS Pili DC": [	],
+	"GDS San Miguel DC": [	],
 	"GDS Tuy DC": [
 		"Cutamora, Marc Justin",
-		"Bernabe, Christopher Gian",
+		"Galinato, Leonard Gelo",
 		"Datul, Pel-Jay",
 		"Felipe, Roberto Jr.",
 		"Rollo, Mark Gil",
@@ -39,7 +36,6 @@
 		"Sana, Abegail",
 		"Cobsilen, Clifford Jr.",
 		"Dacayanan, Jessa Mae",
-		"Cruz, Jan Michael Vincent",
 		"Dancel, Angelic",
 		"Casilla, Regine",
 		"Reboroso, Sunrise",
@@ -50,22 +46,18 @@
 	],
 	
 	"GDS Tayabas DC": [
-		"Esteves, Carl Emmanuel",
 		"Postrado, Jay",
-		"Lariba, Keith Jones Paul"
+		"Lariba, Keith Jones Paul",
+		"Lafuente, RJ"
 	],
 	"MDM Alaminos": [
 		"Cinco, Creesialyn Anne",
 		"De Guzman, Kyle Ashley Rae"
 	],
-	"MDM Ormoc": [
-		"Lafuente, RJ"
-	],
+	"MDM Ormoc": [	],
 	"MDM Zambales": [
 		"Etable, Joseph",
-		"Nicolas, Jonalyn",
-		"Portillano, Perfecto III"
+		"Cuevas, Erick Paul"
 	],
-	"Makati Head Office": [
-	]
+	"Makati Head Office": [	]
 }
