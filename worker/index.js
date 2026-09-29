@@ -51,11 +51,20 @@ export default {
 /* ── reads ── */
 
 async function getConfig(env) {
-  const [cfgRows, holRows] = await Promise.all([
+  const [cfgRows, holRows, holSiteRows] = await Promise.all([
     env.DB.prepare('SELECT key, value FROM config').all(),
-    env.DB.prepare('SELECT date FROM holidays').all(),
+    env.DB.prepare('SELECT date FROM holidays ORDER BY date').all(),
+    env.DB.prepare('SELECT date, site FROM holiday_sites ORDER BY date, site').all(),
   ]);
   const cfg = Object.fromEntries(cfgRows.results.map(r => [r.key, r.value]));
+
+  // Group holiday_sites by date
+  const sitesByDate = {};
+  for (const r of holSiteRows.results) {
+    if (!sitesByDate[r.date]) sitesByDate[r.date] = [];
+    sitesByDate[r.date].push(r.site);
+  }
+
   return {
     ok: true,
     data: {
@@ -63,7 +72,12 @@ async function getConfig(env) {
       END_DATE:        cfg.end_date        || null,
       'DEADLINE DATE': cfg.deadline_date   || null,
       'DEADLINE TIME': cfg.deadline_time   || null,
-      HOLIDAYS:        holRows.results.map(r => r.date),
+      SITE_LIST:       cfg.site_list ? JSON.parse(cfg.site_list) : [],
+      // Each holiday: { date, sites } — empty sites means applies to everyone
+      HOLIDAYS: holRows.results.map(r => ({
+        date:  r.date,
+        sites: sitesByDate[r.date] || [],
+      })),
     },
   };
 }
@@ -160,7 +174,7 @@ function checkToken(env, body) {
 
 async function adminSaveConfig(env, body) {
   checkToken(env, body);
-  const { start_date, end_date, deadline_date, deadline_time, holidays } = body;
+  const { start_date, end_date, deadline_date, deadline_time, holidays, site_list } = body;
   const upsert = env.DB.prepare(
     "INSERT INTO config (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value"
   );
@@ -170,9 +184,21 @@ async function adminSaveConfig(env, body) {
     upsert.bind('deadline_date', deadline_date || ''),
     upsert.bind('deadline_time', deadline_time || ''),
   ];
+  if (Array.isArray(site_list)) {
+    stmts.push(upsert.bind('site_list', JSON.stringify(site_list)));
+  }
   if (Array.isArray(holidays)) {
+    // holidays: array of { date, sites? } or plain date strings (backwards compat)
     stmts.push(env.DB.prepare('DELETE FROM holidays'));
-    for (const d of holidays) stmts.push(env.DB.prepare('INSERT INTO holidays (date) VALUES (?)').bind(d));
+    stmts.push(env.DB.prepare('DELETE FROM holiday_sites'));
+    for (const h of holidays) {
+      const date  = typeof h === 'string' ? h : h.date;
+      const sites = typeof h === 'string' ? [] : (h.sites || []);
+      stmts.push(env.DB.prepare('INSERT INTO holidays (date) VALUES (?)').bind(date));
+      for (const site of sites) {
+        stmts.push(env.DB.prepare('INSERT INTO holiday_sites (date, site) VALUES (?, ?)').bind(date, site));
+      }
+    }
   }
   await env.DB.batch(stmts);
   return { ok: true };
