@@ -454,7 +454,7 @@ const isHoliday = (d, name) => {
 	const sites = CONFIG.HOLIDAYS_MAP.get(ymd(d));
 	if (!sites) return false;
 	if (sites.size === 0) return true; // applies to everyone
-	if (!name) return true; // no name context — treat as global
+	if (!name) return false; // no name context — don't assume global
 	const responderSite = findSiteForName(name);
 	return responderSite ? sites.has(responderSite) : false;
 };
