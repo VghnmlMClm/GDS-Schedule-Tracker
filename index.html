@@ -355,8 +355,8 @@ function normalizeScheduleWithDefaults(dataObj, name){
     } else if (isWeekendDate(d)) {
       out[id] = "RD";
     } else {
-      // weekday default
-      if (!out[id]) out[id] = DEFAULT_WEEKDAY_CODE;
+      // weekday default — also clear stale HOL if holiday was rescinded
+      if (!out[id] || out[id] === 'HOL') out[id] = DEFAULT_WEEKDAY_CODE;
     }
 
     d.setDate(d.getDate() + 1);
