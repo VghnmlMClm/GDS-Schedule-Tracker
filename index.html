@@ -341,7 +341,7 @@ const DEFAULT_WEEKDAY_CODE = "ONS";
 
 function isWeekendDate(d){ const w = d.getDay(); return w === 0 || w === 6; }
 
-function normalizeScheduleWithDefaults(dataObj){
+function normalizeScheduleWithDefaults(dataObj, name){
   const out = { ...(dataObj || {}) };
 
   if (!CONFIG.START_DATE || !CONFIG.END_DATE) return out;
@@ -350,7 +350,7 @@ function normalizeScheduleWithDefaults(dataObj){
   while (d <= CONFIG.END_DATE) {
     const id = ymd(d);
 
-    if (isHoliday(d)) {
+    if (isHoliday(d, name)) {
       out[id] = "HOL";
     } else if (isWeekendDate(d)) {
       out[id] = "RD";
@@ -435,7 +435,9 @@ async function fetchJsonViaProxy(path, { preferProxy = true } = {}) {
 let CONFIG = {
 	START_DATE: null,
 	END_DATE: null,
-	HOLIDAYS_SET: new Set(),
+	// Map<dateStr, Set<site>> — empty Set means holiday applies to everyone
+	HOLIDAYS_MAP: new Map(),
+	SITE_LIST: [],
 	DEADLINE_AT: null,
 	DEADLINE_DATE_STR: null,
 	DEADLINE_TIME_STR: null
@@ -447,13 +449,28 @@ const dateInRange = d => {
 	const dd = new Date(d.getFullYear(), d.getMonth(), d.getDate());
 	return dd >= CONFIG.START_DATE && dd <= CONFIG.END_DATE;
 };
-const isHoliday = d => CONFIG.HOLIDAYS_SET.has(ymd(d));
+// name is optional; when provided, site-specific holidays are checked against the responder's site
+const isHoliday = (d, name) => {
+	const sites = CONFIG.HOLIDAYS_MAP.get(ymd(d));
+	if (!sites) return false;
+	if (sites.size === 0) return true; // applies to everyone
+	if (!name) return true; // no name context — treat as global
+	const responderSite = findSiteForName(name);
+	return responderSite ? sites.has(responderSite) : false;
+};
 async function loadConfig(){
 	try{
 		const j = await workerPost('get_config');
 		CONFIG.START_DATE        = parseDateStr(j.START_DATE);
 		CONFIG.END_DATE          = parseDateStr(j.END_DATE);
-		CONFIG.HOLIDAYS_SET      = new Set(Array.isArray(j.HOLIDAYS) ? j.HOLIDAYS : []);
+		CONFIG.SITE_LIST         = Array.isArray(j.SITE_LIST) ? j.SITE_LIST : [];
+		CONFIG.HOLIDAYS_MAP      = new Map(
+			(Array.isArray(j.HOLIDAYS) ? j.HOLIDAYS : []).map(h => {
+				const date  = typeof h === 'string' ? h : h.date;
+				const sites = typeof h === 'string' ? [] : (h.sites || []);
+				return [date, new Set(sites)];
+			})
+		);
 		CONFIG.DEADLINE_DATE_STR = j["DEADLINE DATE"] || null;
 		CONFIG.DEADLINE_TIME_STR = j["DEADLINE TIME"] || null;
 		CONFIG.DEADLINE_AT       = (CONFIG.DEADLINE_DATE_STR && CONFIG.DEADLINE_TIME_STR)
@@ -463,7 +480,8 @@ async function loadConfig(){
 		CONFIG = {
 		  START_DATE: null,
 		  END_DATE: null,
-		  HOLIDAYS_SET: new Set(),
+		  HOLIDAYS_MAP: new Map(),
+		  SITE_LIST: [],
 		  DEADLINE_AT: null,
 		  DEADLINE_DATE_STR: null,
 		  DEADLINE_TIME_STR: null
@@ -689,7 +707,7 @@ async function computeDeploymentMarkersForSelected() {
   if (![1, 2, 3, 4].includes(CYCLE)) return;
 
   // ---------- utilities ----------
-  const isWD = (d) => (d.getDay() !== 0 && d.getDay() !== 6 && !isHoliday(d));
+  const isWD = (d) => (d.getDay() !== 0 && d.getDay() !== 6 && !isHoliday(d, name));
   const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
   const clampInWindow = (d) => d >= windowStart && d <= windowEnd;
 
@@ -1287,11 +1305,11 @@ async function fetchScheduleData(name){
 		  body: JSON.stringify({ op: "load", name })
 		});
 		const j = await r.json();
-		if (j?.ok && j.data) return normalizeScheduleWithDefaults(stripMeta(j.data));
+		if (j?.ok && j.data) return normalizeScheduleWithDefaults(stripMeta(j.data), name);
 	}catch(e){
 		console.warn("Fetch schedule failed for", name, e);
 	}
-	return normalizeScheduleWithDefaults({});
+	return normalizeScheduleWithDefaults({}, name);
 }
 async function fetchScheduleEnvelope(name){
   // returns: { data: <normalized schedule>, meta: <_meta or {}> }
@@ -1308,15 +1326,14 @@ async function fetchScheduleEnvelope(name){
         ? j.data._meta
         : {};
 
-      // keep your existing behavior: remove _meta and normalize defaults
-      const data = normalizeScheduleWithDefaults(stripMeta(j.data));
+      const data = normalizeScheduleWithDefaults(stripMeta(j.data), name);
       return { data, meta };
     }
   } catch(e){
     console.warn("Fetch schedule envelope failed for", name, e);
   }
 
-  return { data: normalizeScheduleWithDefaults({}), meta: {} };
+  return { data: normalizeScheduleWithDefaults({}, name), meta: {} };
 }
 
 async function loadScheduleForName(name) {
